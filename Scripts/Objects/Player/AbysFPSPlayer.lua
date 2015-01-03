@@ -4,9 +4,10 @@
 -- By Abyssusj @ https://github.com/abyssusj/
 
 -- Includes
--- 1. HUD (Health & Ammo)
+-- Extra functions from AbysUsefulScripts.lua
 
 import "Scripts/Functions/ReleaseTableObjects.lua"
+import "Scripts/Functions/AbysUsefulScripts.lua"
 
 Script.hudFont = nil
 Script.health = 100		--float "Health"
@@ -111,9 +112,8 @@ end
 
 --This function will be called when an entity is loaded in a map.  Use this for intitial setup stuff.
 function Script:Start()
-
-	self.hudFont = Font:Load("Fonts/Arial.ttf",20)
 	
+	-- Set Player Assets
 	self.weapons={}
 	self.currentweaponindex=-1
 	
@@ -626,6 +626,9 @@ function Script:IsAirborne()
 end
 
 function Script:PostRender(context)
+-- This function will be called following a call to World::Render().  Use this for 2D drawing for HUDs, health meters, map displays, etc.
+-- Source: http://www.leadwerks.com/werkspace/page/documentation/_/script-reference/
+
 	context:SetBlendMode(Blend.Alpha)
 	
 	-----------------------------------------------------------------------
@@ -643,33 +646,6 @@ function Script:PostRender(context)
 		end
 	end
 	context:SetColor(1,1,1,1)
-	
-	-----------------------------------------------------------------------
-	-- Code For HUD
-	
-	-- Origional: http://romsteady.blogspot.com.au/2014/01/add-primitive-hud-to-leadwerks-indie.html
-	-- Issue: Code did not work, likely depreciated.
-	-- Resolution: Fixed
-	
-	-- Last Updated: 02/01/2015
-	-- By Abyssusj
-	
-	
-		if self.hudFont~=nil then
-			context:SetFont(self.hudFont)
-			context:SetColor(0.45,1,0.15,1)
-			local fontHeight = self.hudFont:GetHeight()
-			local hudText = "Health: "..self.health
-			local x = 0
-			local y = context:GetHeight() - fontHeight 
-			context:DrawText(hudText, x, y)
-
-			if self.weapons[self.currentweaponindex] ~=nil then
-				hudText = "Ammo: "..self.weapons[self.currentweaponindex].clipammo.."/"..self.weapons[self.currentweaponindex].ammo
-				local x = context:GetWidth() - self.hudFont:GetTextWidth(hudText)
-				context:DrawText(hudText, x, y)
-			end
-		end
 	
 	if self.health>0 then
 		if self.canUse==true and self.carryingEntity == nil then
@@ -696,6 +672,9 @@ function Script:PostRender(context)
 	local indent=8
 	local w = 180
 	local h = 40
+
+	self:PlayerHUD(context) -- function from "Scripts/Functions/AbysUsefulScripts.lua"
+	
 end
 
 --Return whether the player is crouching
